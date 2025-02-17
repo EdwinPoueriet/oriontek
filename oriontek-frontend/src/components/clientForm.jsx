@@ -7,18 +7,40 @@ import {
     TextField,
     Stack
   } from '@mui/material';
-  import { useState } from 'react';
+  import { useEffect, useState } from 'react';
   import { useMutation, useQueryClient } from '@tanstack/react-query';
   import api from '../services/api';
   
   function ClientForm({ open, onClose, initialData = null }) {
     const queryClient = useQueryClient();
-    const [formData, setFormData] = useState(initialData || {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: ''
+    const [formData, setFormData] = useState({
+        id: null,
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: ''
     });
+
+    useEffect(() => {
+        if (initialData) {
+          setFormData({
+            id: initialData.id || null,
+            firstName: initialData.firstName || '',
+            lastName: initialData.lastName || '',
+            email: initialData.email || '',
+            phone: initialData.phone || ''
+          });
+        } else {
+          setFormData({
+            id: null,
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: ''
+          });
+        }
+      }, [initialData]);
+      
   
     const mutation = useMutation({
       mutationFn: (data) => initialData 

@@ -7,21 +7,43 @@ import {
     TextField,
     Stack
   } from '@mui/material';
-  import { useState } from 'react';
+  import { useEffect, useState } from 'react';
   import { useMutation, useQueryClient } from '@tanstack/react-query';
   import api from '../services/api';
   
   function AddressForm({ open, onClose, clientId, initialData = null }) {
     const queryClient = useQueryClient();
-    const [formData, setFormData] = useState(initialData || {
+    const [formData, setFormData] = useState({
       streetAddress: '',
       city: '',
       state: '',
       postalCode: ''
     });
   
+    useEffect(() => {
+            if (initialData) {
+              setFormData({
+                id: initialData.id || null,
+                streetAddress: initialData.streetAddress || '',
+                city: initialData.city || '',
+                state: initialData.state || '',
+                postalCode: initialData.postalCode || ''
+              });
+            } else {
+              setFormData({
+                id: null,
+                streetAddress: '',
+                city: '',
+                state: '',
+                postalCode: ''
+              });
+            }
+          }, [initialData]);
+          
     const mutation = useMutation({
-        mutationFn: (data) => api.createAddress(clientId, data),
+        mutationFn: (data) =>  initialData 
+        ? api.updateAddress(clientId,initialData.id, data)
+        : api.createAddress(clientId, data),
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['addresses', clientId] });
           onClose();
